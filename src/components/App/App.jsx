@@ -1,24 +1,48 @@
-import s from './App.module.css';
-import { useSelector } from 'react-redux';
-import ContactList from '../ContactList/ContactList';
-import ContactForm from '../ContactForm/ContactForm';
-import Filter from '../Filter/Filter';
-import { getContactsError, getContactsLoading } from '../../redux/selectors';
+import { Switch } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { useEffect } from 'react';
+// import s from './App.module.css';
+import Container from '../Container';
+import HomeView from '../HomeView';
+import AppBar from '../AppBar';
+import RegisterForm from '../RegisterForm';
+import LoginForm from '../LoginForm';
+import ContactsView from '../ContactsView';
+import PrivateRoute from '../../components/PrivateRoute';
+import PublicRoute from '../../components/PublicRoute';
+
+import operations from '../../redux/operations';
 
 function App() {
-  const error = useSelector(state => getContactsError(state));
-  const isLoading = useSelector(state => getContactsLoading(state));
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(operations.getCurrentUser());
+    //eslint-disable-next-line
+  }, []);
   return (
-    <div className={s.App}>
-      <h1>Phonebook</h1>
-      <ContactForm />
-      <h2>Contacts</h2>
-      <p className={s.find}>Find contacts by name</p>
-      <Filter />
-      {isLoading && <p>{' Loading... '}</p>}
-      {error && <p>{' Sorry, something goes wrong: ' + error}</p>}
-      <ContactList />
-    </div>
+    <Container>
+      <AppBar />
+      <Switch>
+        <PublicRoute path="/" exact component={HomeView} />
+        <PublicRoute
+          path="/register"
+          component={RegisterForm}
+          restricted
+          redirectTo="/contacts"
+        />
+        <PublicRoute
+          path="/login"
+          component={LoginForm}
+          restricted
+          redirectTo="/contacts"
+        />
+        <PrivateRoute
+          path="/contacts"
+          component={ContactsView}
+          redirectTo="/login"
+        />
+      </Switch>
+    </Container>
   );
 }
 
