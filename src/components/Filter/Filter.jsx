@@ -1,15 +1,33 @@
 import { useDispatch } from 'react-redux';
-import { filterContact } from '../../redux/actions';
+import actions from '../../redux/actions';
+
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+
+const useStyles = makeStyles({
+  filter: {
+    marginBottom: 15,
+  },
+});
 
 const Filter = () => {
   const dispatch = useDispatch();
 
-  const onFilter = event => dispatch(filterContact(event.target.value));
+  const onFilter = event => dispatch(actions.filterContact(event.target.value));
+
+  const classes = useStyles();
 
   return (
-    <label>
-      <input type="text" name="filter" onChange={onFilter} />
-    </label>
+    <TextField
+      className={classes.filter}
+      autoComplete="off"
+      type="text"
+      name="filter"
+      onChange={onFilter}
+      size="small"
+      label="Find contact by Name"
+      variant="outlined"
+    />
   );
 };
 
