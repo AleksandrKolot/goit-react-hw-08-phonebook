@@ -1,8 +1,19 @@
-import s from './ContactForm.module.css';
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { addContact } from '../../redux/operations';
-import { getContactsItems } from '../../redux/selectors';
+import operations from '../../redux/operations';
+import selectors from '../../redux/selectors';
+import s from './ContactForm.module.css';
+
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+import SaveIcon from '@material-ui/icons/Save';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles({
+  textField: {
+    marginBottom: '15px',
+  },
+});
 
 function ContactForm() {
   const dispatch = useDispatch();
@@ -23,7 +34,7 @@ function ContactForm() {
     }
   };
 
-  const contacts = useSelector(state => getContactsItems(state));
+  const contacts = useSelector(state => selectors.getContactsItems(state));
 
   const isContsctExist = () => {
     const normalizedFilter = name.toLowerCase();
@@ -43,38 +54,49 @@ function ContactForm() {
       alert(`${existContact.name} is already in contacts.`);
       return;
     }
-    dispatch(addContact({ name, number }));
+    dispatch(operations.addContact({ name, number }));
     setName('');
     setNumber('');
   };
 
+  const classes = useStyles();
+
   return (
     <form className={s.form} onSubmit={handleSubmit}>
-      <label className={s.label}>
-        Name
-        <input
-          className={s.input}
-          type="text"
-          name="name"
-          value={name}
-          pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-          title="Имя может состоять только из букв, апострофа, тире и пробелов. Например Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan и т. п."
-          onChange={handleInputChange}
-        />
-      </label>
-      <label className={s.label}>
-        Number
-        <input
-          className={s.input}
-          type="text"
-          name="number"
-          value={number}
-          pattern="(\+?( |-|\.)?\d{1,2}( |-|\.)?)?(\(?\d{3}\)?|\d{3})( |-|\.)?(\d{3}( |-|\.)?\d{4})"
-          title="Номер телефона должен состоять из 11-12 цифр и может содержать цифры, пробелы, тире, пузатые скобки и может начинаться с +"
-          onChange={handleInputChange}
-        />
-      </label>
-      <button type="submit">Add contact</button>
+      <TextField
+        type="text"
+        name="name"
+        value={name}
+        onChange={handleInputChange}
+        className={classes.textField}
+        size="small"
+        label="Name"
+        pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
+        title="Имя может состоять только из букв, апострофа, тире и пробелов. Например Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan и т. п."
+        variant="outlined"
+      />
+
+      <TextField
+        type="text"
+        name="number"
+        value={number}
+        onChange={handleInputChange}
+        className={classes.textField}
+        size="small"
+        label="Number"
+        pattern="(\+?( |-|\.)?\d{1,2}( |-|\.)?)?(\(?\d{3}\)?|\d{3})( |-|\.)?(\d{3}( |-|\.)?\d{4})"
+        title="Номер телефона должен состоять из 11-12 цифр и может содержать цифры, пробелы, тире, пузатые скобки и может начинаться с +"
+        variant="outlined"
+      />
+      <Button
+        type="submit"
+        variant="contained"
+        color="primary"
+        size="small"
+        startIcon={<SaveIcon />}
+      >
+        add contact
+      </Button>
     </form>
   );
 }
